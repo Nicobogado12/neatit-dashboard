@@ -8,30 +8,54 @@
 <style>
   :root { color-scheme: light; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; color: #1a1a2e; padding: 20px; }
-  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-  .header h1 { font-size: 22px; font-weight: 700; color: #1a1a2e; }
+  /* === MOBILE FIRST === */
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; color: #1a1a2e; padding: 12px; }
+  .header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 16px; }
+  .header h1 { font-size: 18px; font-weight: 700; color: #1a1a2e; }
   .header h1 span { color: #6366f1; }
-  .header .updated { font-size: 12px; color: #888; }
+  .header .updated { font-size: 11px; color: #888; width: 100%; }
+  .logo-img { height: 32px; width: auto; }
   .loading { text-align: center; padding: 60px; color: #888; font-size: 15px; }
   .loading .spinner { width: 32px; height: 32px; border: 3px solid #e0e0e0; border-top-color: #6366f1; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
-  .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
-  .card .label { font-size: 12px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-  .card .value { font-size: 32px; font-weight: 700; color: #1a1a2e; }
-  .card .sub { font-size: 12px; color: #888; margin-top: 4px; }
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+  .card { background: #fff; border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  .card .label { font-size: 11px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .card .value { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+  .card .sub { font-size: 11px; color: #888; margin-top: 4px; }
   .card.accent .value { color: #6366f1; }
   .card.green .value { color: #10b981; }
   .card.orange .value { color: #f59e0b; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-  .panel { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
-  .panel h2 { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 16px; }
-  .chart-wrap { position: relative; height: 220px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; padding: 8px 10px; font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; border-bottom: 1px solid #f0f0f0; }
-  td { padding: 10px 10px; border-bottom: 1px solid #f7f7f7; vertical-align: middle; }
+  .row { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px; }
+  .panel { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  .panel h2 { font-size: 13px; font-weight: 600; color: #1a1a2e; margin-bottom: 12px; }
+  .chart-wrap { position: relative; height: 200px; }
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 480px; }
+  th { text-align: left; padding: 8px 8px; font-size: 10px; font-weight: 600; color: #888; text-transform: uppercase; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
+  td { padding: 9px 8px; border-bottom: 1px solid #f7f7f7; vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
+  @media (min-width: 600px) {
+    body { padding: 20px; }
+    .cards { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .card .value { font-size: 30px; }
+    .header h1 { font-size: 20px; }
+    .header .updated { width: auto; }
+  }
+  @media (min-width: 900px) {
+    body { padding: 24px; }
+    .cards { grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+    .card { padding: 20px; }
+    .card .value { font-size: 32px; }
+    .card .label { font-size: 12px; }
+    .row { grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .chart-wrap { height: 220px; }
+    .header h1 { font-size: 22px; }
+    .panel h2 { font-size: 14px; margin-bottom: 16px; }
+    table { font-size: 13px; min-width: unset; }
+    th { padding: 8px 10px; font-size: 11px; }
+    td { padding: 10px 10px; }
+  }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
   .progress-bar { height: 6px; background: #f0f0f0; border-radius: 3px; overflow: hidden; }
   .progress-fill { height: 100%; border-radius: 3px; }
@@ -66,7 +90,7 @@
   </div>
   <div class="panel" style="margin-bottom:24px">
     <h2>Detalle por Vertical</h2>
-    <table>
+    <div class="table-scroll"><table>
       <thead><tr><th>Vertical</th><th>Total</th><th>Enviados</th><th>Respondieron</th><th>Sin email</th><th>Libres</th><th>🎯 Op.</th><th>Progreso</th></tr></thead>
       <tbody id="table-verticales"></tbody>
     </table>
