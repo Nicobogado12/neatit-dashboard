@@ -175,7 +175,7 @@
   <div class="card accent">
     <div class="label">Total Contactos</div>
     <div class="value" id="card-total">—</div>
-    <div class="sub">en todas las verticales</div>
+    <div class="sub" id="card-con-email-sub">— con email</div>
   </div>
   <div class="card">
     <div class="label">📤 Enviados</div>
@@ -236,7 +236,7 @@
     <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:#f0f6fd;border-radius:8px;border-left:3px solid #3DA2EA;">
       <span style="font-size:18px;">📤</span>
       <div>
-        <div style="font-size:12px;font-weight:700;color:#1e3a5f;">46 emails enviados · Salud-farma-Bio</div>
+        <div style="font-size:12px;font-weight:700;color:#1e3a5f;">167 emails enviados · Salud · 5 respondieron</div>
         <div style="font-size:12px;color:#374151;margin-top:2px;">Asunto: "Infraestructura y soporte IT para el sector salud" · Droguería del Sud, Disval, FarmaPlus, Fleni, Alexander Fleming, Mater Dei, y más.</div>
       </div>
     </div>
@@ -287,17 +287,17 @@
 // DATOS BASE (desde Excel, colores)
 // =====================================================
 const BASE_DATA = {
-  'Salud':             { total: 346, enviados: 167, respondieron: 5,  sinEmail: 162, libres: 12,  oportunidades: 1 },
-  'Seguros':           { total: 198, enviados: 54,  respondieron: 3,  sinEmail: 79,  libres: 62,  oportunidades: 0 },
+  'Salud':             { total: 352, enviados: 167, respondieron: 5,  sinEmail: 152, libres: 28,  oportunidades: 1 },
+  'Seguros':           { total: 198, enviados: 0,   respondieron: 0,  sinEmail: 79,  libres: 119, oportunidades: 0 },
   'Energía y Minería': { total: 142, enviados: 0,   respondieron: 0,  sinEmail: 2,   libres: 140, oportunidades: 0 },
-  'Agro':              { total: 161, enviados: 153, respondieron: 1,  sinEmail: 7,   libres: 0,   oportunidades: 0 },
-  'Finanzas':          { total: 203, enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 203, oportunidades: 0 },
-  'Industria':         { total: 103, enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 103, oportunidades: 0 },
+  'Agro':              { total: 161, enviados: 156, respondieron: 0,  sinEmail: 4,   libres: 1,   oportunidades: 0 },
+  'Finanzas':          { total: 203, enviados: 0,   respondieron: 0,  sinEmail: 1,   libres: 202, oportunidades: 0 },
+  'Industria':         { total: 103, enviados: 0,   respondieron: 0,  sinEmail: 1,   libres: 102, oportunidades: 0 },
   'Logística':         { total: 155, enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 155, oportunidades: 0 },
   'Tecnología-Telco':  { total: 355, enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 355, oportunidades: 0 },
   'Comercio':          { total: 45,  enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 45,  oportunidades: 0 },
-  'Otros':             { total: 197, enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 197, oportunidades: 0 },
-  'Ingenima':          { total: 117, enviados: 117, respondieron: 1,  sinEmail: 0,   libres: 0,   oportunidades: 1 },
+  'Otros':             { total: 197, enviados: 0,   respondieron: 0,  sinEmail: 1,   libres: 196, oportunidades: 0 },
+  'Ingenima':          { total: 138, enviados: 117, respondieron: 1,  sinEmail: 0,   libres: 20,  oportunidades: 1 },
 };
 
 // Oportunidades guardadas localmente (sobrescriben BASE_DATA)
@@ -353,8 +353,9 @@ function getFilteredData() {
 function updateCards(data) {
   const totals = sumData(data);
   document.getElementById('card-total').textContent = totals.total.toLocaleString('es-AR');
+  document.getElementById('card-con-email-sub').textContent = totals.conEmail.toLocaleString('es-AR') + ' con email';
   document.getElementById('card-enviados').textContent = totals.enviados.toLocaleString('es-AR');
-  document.getElementById('card-enviados-pct').textContent = totals.total ? Math.round(totals.enviados/totals.total*100) + '% del total' : '';
+  document.getElementById('card-enviados-pct').textContent = totals.conEmail ? Math.round(totals.enviados/totals.conEmail*100) + '% con email' : '';
   document.getElementById('card-respondieron').textContent = totals.respondieron.toLocaleString('es-AR');
   document.getElementById('card-resp-pct').textContent = totals.enviados ? Math.round(totals.respondieron/totals.enviados*100) + '% de enviados' : '';
   document.getElementById('card-libres').textContent = totals.libres.toLocaleString('es-AR');
@@ -364,11 +365,12 @@ function updateCards(data) {
 function sumData(data) {
   return Object.values(data).reduce((acc, v) => ({
     total: acc.total + v.total,
+    conEmail: acc.conEmail + (v.total - v.sinEmail),
     enviados: acc.enviados + v.enviados,
     respondieron: acc.respondieron + v.respondieron,
     libres: acc.libres + v.libres,
     oportunidades: acc.oportunidades + v.oportunidades,
-  }), { total:0, enviados:0, respondieron:0, libres:0, oportunidades:0 });
+  }), { total:0, conEmail:0, enviados:0, respondieron:0, libres:0, oportunidades:0 });
 }
 
 // =====================================================
@@ -391,7 +393,8 @@ function renderTable(data) {
 
   tbody.innerHTML = keys.map(v => {
     const d = data[v];
-    const pct = d.total ? Math.round(d.enviados / d.total * 100) : 0;
+    const conEmail = d.total - d.sinEmail;
+    const pct = conEmail ? Math.round(d.enviados / conEmail * 100) : 0;
     const isHighlighted = v === activeFilter;
     return `<tr class="${isHighlighted ? 'highlight-row' : ''}" data-vertical="${v}" onclick="selectVertical('${v}')">
       <td><strong>${v}</strong></td>
