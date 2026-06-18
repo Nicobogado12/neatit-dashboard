@@ -173,9 +173,9 @@
 <!-- Tarjetas resumen -->
 <div class="cards" id="cards-container">
   <div class="card accent">
-    <div class="label">Total Contactos</div>
-    <div class="value" id="card-total">—</div>
-    <div class="sub" id="card-con-email-sub">— con email</div>
+    <div class="label">Contactos con Email</div>
+    <div class="value" id="card-con-email">—</div>
+    <div class="sub" id="card-total-sub">— en base total</div>
   </div>
   <div class="card">
     <div class="label">📤 Enviados</div>
@@ -352,8 +352,8 @@ function getFilteredData() {
 // =====================================================
 function updateCards(data) {
   const totals = sumData(data);
-  document.getElementById('card-total').textContent = totals.total.toLocaleString('es-AR');
-  document.getElementById('card-con-email-sub').textContent = totals.conEmail.toLocaleString('es-AR') + ' con email';
+  document.getElementById('card-con-email').textContent = totals.conEmail.toLocaleString('es-AR');
+  document.getElementById('card-total-sub').textContent = totals.total.toLocaleString('es-AR') + ' en base total';
   document.getElementById('card-enviados').textContent = totals.enviados.toLocaleString('es-AR');
   document.getElementById('card-enviados-pct').textContent = totals.conEmail ? Math.round(totals.enviados/totals.conEmail*100) + '% con email' : '';
   document.getElementById('card-respondieron').textContent = totals.respondieron.toLocaleString('es-AR');
