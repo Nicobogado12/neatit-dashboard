@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NeatIT — Dashboard de Campaña</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js"></script>
 <style>
   /* === RESET & BASE === */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -348,13 +348,15 @@ let barChart, donutChart;
 // INIT
 // =====================================================
 document.addEventListener('DOMContentLoaded', () => {
-  renderAll(liveData);
+  updateCards(liveData);
+  renderTable(liveData);
   document.getElementById('table-section').style.display = 'block';
   document.getElementById('loading-section').style.display = 'none';
   document.getElementById('last-update').textContent = 'Última actualización: ' + new Date().toLocaleString('es-AR');
   setupSearch();
   setupToggles();
   setupTableSort();
+  try { renderCharts(liveData); } catch(e) { console.warn('Charts no disponibles:', e); }
 });
 
 // =====================================================
