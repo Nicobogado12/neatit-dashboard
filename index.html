@@ -317,7 +317,7 @@ const BASE_DATA = {
   'Seguros':           { total: 198, enviados: 119, respondieron: 1,  sinEmail: 79,  libres: 0,   oportunidades: 0 },
   'Energía y Minería': { total: 142, enviados: 0,   respondieron: 0,  sinEmail: 2,   libres: 140, oportunidades: 0 },
   'Agro':              { total: 161, enviados: 156, respondieron: 0,  sinEmail: 4,   libres: 1,   oportunidades: 0 },
-  'Finanzas':          { total: 203, enviados: 28,  respondieron: 1,  sinEmail: 1,   libres: 173, oportunidades: 0 },
+  'Finanzas':          { total: 206, enviados: 52,  respondieron: 1,  sinEmail: 1,   libres: 152, oportunidades: 0 },
   'Industria':         { total: 103, enviados: 0,   respondieron: 0,  sinEmail: 1,   libres: 102, oportunidades: 0 },
   'Logística':         { total: 155, enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 155, oportunidades: 0 },
   'Tecnología-Telco':  { total: 355, enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 355, oportunidades: 0 },
@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupSearch();
   setupToggles();
   setupTableSort();
-  try { renderCharts(liveData); } catch(e) { console.warn('Charts no disponibles:', e); }
+  requestAnimationFrame(() => { try { renderCharts(liveData); } catch(e) { console.error('Charts error:', e); } });
 });
 
 // =====================================================
@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderAll(data) {
   updateCards(data);
   renderTable(data);
-  renderCharts(data);
+  requestAnimationFrame(() => renderCharts(data));
 }
 
 function getFilteredData() {
@@ -691,6 +691,10 @@ function setupTableSort() {
     });
   });
 }
+
+window.addEventListener('resize', () => {
+  requestAnimationFrame(() => renderCharts(activeFilter ? { [activeFilter]: liveData[activeFilter] } : liveData));
+});
 </script>
 </body>
 </html>
