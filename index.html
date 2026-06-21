@@ -556,4 +556,35 @@ function setupToggles() {
 function setupSearch() {
   const input = document.getElementById('search-input');
   const clearBtn = document.getElementById('clear-search');
-  input
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    clearBtn.classList.toggle('show', q.length > 0);
+    document.querySelectorAll('#table-verticales tr').forEach(row => {
+      const v = row.dataset.vertical || '';
+      row.classList.toggle('filtered-out', q.length > 0 && !v.toLowerCase().includes(q));
+    });
+  });
+  clearBtn.addEventListener('click', () => {
+    input.value = '';
+    clearBtn.classList.remove('show');
+    document.querySelectorAll('#table-verticales tr').forEach(row => row.classList.remove('filtered-out'));
+  });
+}
+
+// Ordenar tabla
+function setupTableSort() {
+  document.querySelectorAll('#main-table th[data-col]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      if (sortCol === col) { sortAsc = !sortAsc; }
+      else { sortCol = col; sortAsc = true; }
+      document.querySelectorAll('#main-table th').forEach(t => t.classList.remove('sorted'));
+      th.classList.add('sorted');
+      th.querySelector('.sort-icon').textContent = sortAsc ? '↑' : '↓';
+      renderTable(liveData);
+    });
+  });
+}
+</script>
+</body>
+</html>
