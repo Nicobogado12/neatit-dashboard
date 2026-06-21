@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NeatIT — Dashboard de Campaña</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js"></script>
+
 <style>
   /* === RESET & BASE === */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -273,11 +273,11 @@
 <div class="row">
   <div class="panel">
     <div class="panel-header"><h2>📊 Progreso por Vertical</h2></div>
-    <div class="chart-wrap" id="barChartWrap"><canvas id="barChart"></canvas></div>
+    <canvas id="barChart" style="width:100%;"></canvas>
   </div>
   <div class="panel">
     <div class="panel-header"><h2>🍩 Distribución General</h2></div>
-    <div class="chart-wrap"><canvas id="donutChart"></canvas></div>
+    <canvas id="donutChart" style="width:100%;height:220px;"></canvas>
   </div>
 </div>
 
@@ -451,52 +451,156 @@ function renderTable(data) {
 // =====================================================
 function renderCharts(data) {
   const labels = Object.keys(data);
-  const colors = { enviados:'#3DA2EA', respondieron:'#6E42B1', libres:'#94a3b8', oportunidades:'#f59e0b' };
+  const COLORS = { enviados:'#3DA2EA', respondieron:'#6E42B1', libres:'#94a3b8', oportunidades:'#f59e0b' };
+  const NAMES  = { enviados:'Enviados', respondieron:'Respondieron', libres:'Libres', oportunidades:'Oportunidades' };
+  const metrics = ['enviados','respondieron','libres','oportunidades'].filter(m => activeMetrics[m]);
 
-  const datasets = [];
-  if (activeMetrics.enviados)      datasets.push({ label:'Enviados',      data: labels.map(v=>data[v].enviados),      backgroundColor:colors.enviados, borderRadius:4 });
-  if (activeMetrics.respondieron)  datasets.push({ label:'Respondieron',  data: labels.map(v=>data[v].respondieron),  backgroundColor:colors.respondieron, borderRadius:4 });
-  if (activeMetrics.libres)        datasets.push({ label:'Libres',        data: labels.map(v=>data[v].libres),        backgroundColor:colors.libres, borderRadius:4 });
-  if (activeMetrics.oportunidades) datasets.push({ label:'Oportunidades', data: labels.map(v=>data[v].oportunidades), backgroundColor:colors.oportunidades, borderRadius:4 });
+  // ── BAR CHART ──────────────────────────────────────────
+  const barCanvas = document.getElementById('barChart');
+  const rowH = 28, padL = 130, padR = 50, padT = 10, padB = 40;
+  barCanvas.height = labels.length * rowH + padT + padB;
+  barCanvas.width  = barCanvas.parentElement.clientWidth || 400;
+  const W = barCanvas.width, bw = W - padL - padR;
+  const bCtx = barCanvas.getContext('2d');
 
-  const barCtx = document.getElementById('barChart').getContext('2d');
-  if (barChart) barChart.destroy();
-  const isMobile = window.innerWidth < 700;
-  const nLabels = labels.length;
-  const chartHeight = isMobile ? Math.max(280, nLabels * 38) : Math.max(300, nLabels * 28);
-  document.getElementById('barChartWrap').style.height = chartHeight + 'px';
-  barChart = new Chart(barCtx, {
-    type: 'bar',
-    data: { labels, datasets },
-    options: {
-      indexAxis: isMobile ? 'y' : 'x',
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { font:{size:11}, boxWidth:12 } } },
-      scales: {
-        x: { stacked: true, ticks:{font:{size:isMobile?10:11}}, grid:{display:false} },
-        y: { stacked: true, ticks:{font:{size:isMobile?10:11}} }
-      }
-    }
-  });
+  const maxVal = Math.max(1, ...labels.map(v => metrics.reduce((s,m)=>s+(data[v][m]||0),0)));
 
+  function drawBar() {
+    bCtx.clearRect(0, 0, W, barCanvas.height);
+    bCtx.font = '11px -apple-system,sans-serif';
+    labels.forEach((v,i) => {
+      const y = padT + i * rowH;
+      // label
+      bCtx.fillStyle = '#333'; bCtx.textAlign = 'right';
+      bCtx.fillText(v.length > 16 ? v.slice(0,15)+'…' : v, padL - 6, y + rowH*0.65);
+      // bars
+      let x = padL;
+      metrics.forEach(m => {
+        const w = (data[v][m]||0) / maxVal * bw;
+        if (w > 0) {
+          bCtx.fillStyle = COLORS[m];
+          bCtx.beginPath();
+          bCtx.roundRect ? bCtx.roundRect(x, y+3, w, rowH-6, 3) : bCtx.rect(x, y+3, w, rowH-6);
+          bCtx.fill();
+          x += w;
+        }
+      });
+      // total label
+      const total = metrics.reduce((s,m)=>s+(data[v][m]||0),0);
+      bCtx.fillStyle = '#666'; bCtx.textAlign = 'left';
+      bCtx.fillText(total, padL + (total/maxVal*bw) + 4, y + rowH*0.65);
+    });
+    // legend
+    let lx = padL; const ly = barCanvas.height - 14;
+    metrics.forEach(m => {
+      bCtx.fillStyle = COLORS[m];
+      bCtx.fillRect(lx, ly - 9, 10, 10);
+      bCtx.fillStyle = '#555'; bCtx.textAlign = 'left';
+      bCtx.fillText(NAMES[m], lx + 13, ly);
+      lx += bCtx.measureText(NAMES[m]).width + 26;
+    });
+  }
+  drawBar();
+
+  // Tooltip on hover
+  barCanvas._tooltip = null;
+  barCanvas.onmousemove = (e) => {
+    const rect = barCanvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (barCanvas.width / rect.width);
+    const my = (e.clientY - rect.top)  * (barCanvas.height / rect.height);
+    const i = Math.floor((my - padT) / rowH);
+    if (i >= 0 && i < labels.length && mx >= padL) {
+      const v = labels[i];
+      drawBar();
+      // highlight row
+      bCtx.fillStyle = 'rgba(61,162,234,0.08)';
+      bCtx.fillRect(padL, padT + i * rowH, bw, rowH);
+      // tooltip
+      const lines = metrics.map(m => `${NAMES[m]}: ${data[v][m]||0}`);
+      const tw = Math.max(...lines.map(l => bCtx.measureText(l).width)) + 16;
+      const th = lines.length * 16 + 12;
+      let tx = Math.min(mx + 12, W - tw - 4), ty = Math.max(4, my - th/2);
+      bCtx.fillStyle = 'rgba(30,30,40,0.88)';
+      bCtx.beginPath();
+      bCtx.roundRect ? bCtx.roundRect(tx, ty, tw, th, 6) : bCtx.rect(tx, ty, tw, th);
+      bCtx.fill();
+      bCtx.fillStyle = '#fff'; bCtx.textAlign = 'left';
+      lines.forEach((l, li) => bCtx.fillText(l, tx + 8, ty + 14 + li * 16));
+    } else { drawBar(); }
+  };
+  barCanvas.onmouseleave = () => drawBar();
+
+  // ── DONUT CHART ────────────────────────────────────────
+  const dCanvas = document.getElementById('donutChart');
   const totals = sumData(data);
-  const donutCtx = document.getElementById('donutChart').getContext('2d');
-  if (donutChart) donutChart.destroy();
-  donutChart = new Chart(donutCtx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Enviados','Respondieron','Libres','Sin Email'],
-      datasets: [{
-        data: [totals.enviados, totals.respondieron, totals.libres, totals.total - totals.enviados - totals.libres],
-        backgroundColor: ['#6366f1','#10b981','#94a3b8','#f1f5f9'],
-        borderWidth: 2, borderColor: '#fff'
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { font:{size:11}, boxWidth:12 } } }
-    }
-  });
+  const slices = [
+    { label:'Enviados',     val: totals.enviados,      color:'#6366f1' },
+    { label:'Respondieron', val: totals.respondieron,  color:'#10b981' },
+    { label:'Libres',       val: totals.libres,        color:'#94a3b8' },
+    { label:'Sin Email',    val: Math.max(0, totals.total - totals.enviados - totals.libres - totals.respondieron), color:'#e5e7f0' },
+  ].filter(s => s.val > 0);
+
+  const dW = dCanvas.parentElement.clientWidth || 300;
+  dCanvas.width = dW; dCanvas.height = 220;
+  const dCtx = dCanvas.getContext('2d');
+  const cx = 100, cy = 105, R = 80, Ri = 48;
+  const totalVal = slices.reduce((s,sl)=>s+sl.val,0) || 1;
+
+  // precompute angles
+  let ang = -Math.PI/2;
+  slices.forEach(sl => { sl.startA = ang; ang += sl.val/totalVal*2*Math.PI; sl.endA = ang; });
+
+  function drawDonut(hover=-1) {
+    dCtx.clearRect(0,0,dW,220);
+    slices.forEach((sl,i) => {
+      dCtx.beginPath();
+      dCtx.moveTo(cx, cy);
+      const offset = i === hover ? 8 : 0;
+      const midA = (sl.startA + sl.endA) / 2;
+      const ox = Math.cos(midA)*offset, oy = Math.sin(midA)*offset;
+      dCtx.arc(cx+ox, cy+oy, R + (i===hover?4:0), sl.startA, sl.endA);
+      dCtx.closePath();
+      dCtx.fillStyle = sl.color;
+      dCtx.fill();
+      dCtx.strokeStyle='#fff'; dCtx.lineWidth=2; dCtx.stroke();
+    });
+    // hole
+    dCtx.beginPath(); dCtx.arc(cx,cy,Ri,0,Math.PI*2);
+    dCtx.fillStyle='#fff'; dCtx.fill();
+    // center text
+    dCtx.fillStyle='#333'; dCtx.font='bold 18px -apple-system,sans-serif'; dCtx.textAlign='center';
+    dCtx.fillText(totals.total, cx, cy+4);
+    dCtx.fillStyle='#888'; dCtx.font='10px -apple-system,sans-serif';
+    dCtx.fillText('total', cx, cy+18);
+    // legend
+    const lx = cx*2 + 16; let ly = 30;
+    dCtx.textAlign='left';
+    slices.forEach((sl,i) => {
+      dCtx.fillStyle = sl.color;
+      dCtx.fillRect(lx, ly-10, 12, 12);
+      dCtx.fillStyle = i===hover ? '#111' : '#444';
+      dCtx.font = i===hover ? 'bold 12px -apple-system,sans-serif' : '12px -apple-system,sans-serif';
+      dCtx.fillText(`${sl.label}: ${sl.val}`, lx+16, ly);
+      const pct = Math.round(sl.val/totalVal*100);
+      dCtx.fillStyle='#999'; dCtx.font='11px -apple-system,sans-serif';
+      dCtx.fillText(`${pct}%`, lx+16, ly+14);
+      ly += 38;
+    });
+  }
+  drawDonut();
+
+  dCanvas.onmousemove = (e) => {
+    const rect = dCanvas.getBoundingClientRect();
+    const mx = (e.clientX-rect.left)*(dW/rect.width) - cx;
+    const my = (e.clientY-rect.top)*(220/rect.height) - cy;
+    const dist = Math.sqrt(mx*mx+my*my);
+    if (dist < R && dist > Ri) {
+      let a = Math.atan2(my,mx); if(a < -Math.PI/2) a += 2*Math.PI;
+      const hi = slices.findIndex(sl => a >= sl.startA && a < sl.endA);
+      drawDonut(hi); dCanvas.style.cursor='pointer';
+    } else { drawDonut(); dCanvas.style.cursor='default'; }
+  };
+  dCanvas.onmouseleave = () => { drawDonut(); };
 }
 
 // =====================================================
