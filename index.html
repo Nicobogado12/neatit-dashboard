@@ -292,68 +292,76 @@
 </div>
 
 <!-- Respondieron / Pidieron Brochure -->
+<style>
+.resp-table { width:100%; border-collapse:collapse; font-size:13px; }
+.resp-table th { padding:8px 12px; font-weight:700; color:#1e3a5f; border-bottom:2px solid #ddeaf7; text-align:left; background:#f0f6fd; }
+.resp-table td { padding:9px 12px; border-bottom:1px solid #f0f0f0; vertical-align:top; }
+.resp-table tr:nth-child(even) { background:#fafafa; }
+@media (max-width: 640px) {
+  .resp-table thead { display:none; }
+  .resp-table tr { display:block; margin-bottom:10px; border:1px solid #ddeaf7; border-radius:10px; padding:8px 4px; background:#fff !important; }
+  .resp-table td { display:flex; flex-direction:column; padding:5px 10px; border-bottom:1px solid #f3f4f6; font-size:12px; }
+  .resp-table td::before { content:attr(data-label); font-weight:700; color:#6b7280; font-size:10px; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:2px; }
+  .resp-table td:last-child { border-bottom:none; }
+}
+</style>
 <div class="panel" style="margin-top:16px;margin-bottom:16px;">
   <div class="panel-header"><h2>📬 Respuestas recibidas — Brochure & Seguimiento</h2><span style="font-size:11px;color:#888;">Al 24/06/2026 · 6 contactos</span></div>
   <div style="overflow-x:auto;">
-    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+    <table class="resp-table">
       <thead>
-        <tr style="background:#f0f6fd;text-align:left;">
-          <th style="padding:8px 12px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #ddeaf7;">Fecha</th>
-          <th style="padding:8px 12px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #ddeaf7;">Nombre</th>
-          <th style="padding:8px 12px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #ddeaf7;">Empresa</th>
-          <th style="padding:8px 12px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #ddeaf7;">Vertical</th>
-          <th style="padding:8px 12px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #ddeaf7;">Respuesta</th>
-          <th style="padding:8px 12px;font-weight:700;color:#1e3a5f;border-bottom:2px solid #ddeaf7;">Estado</th>
+        <tr>
+          <th>Fecha</th><th>Nombre</th><th>Empresa</th><th>Vertical</th><th>Respuesta</th><th>Estado</th>
         </tr>
       </thead>
       <tbody>
-        <tr style="border-bottom:1px solid #f0f0f0;">
-          <td style="padding:9px 12px;color:#6b7280;white-space:nowrap;">10/06/2026</td>
-          <td style="padding:9px 12px;font-weight:600;">Valeria Cellerino</td>
-          <td style="padding:9px 12px;">Sanatorio Americano SA</td>
-          <td style="padding:9px 12px;"><span style="background:#dbeafe;color:#1e40af;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Salud</span></td>
-          <td style="padding:9px 12px;color:#374151;font-style:italic;">"Volvé a escribirme la primera semana de julio para coordinar."</td>
-          <td style="padding:9px 12px;"><span style="background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">🎯 Oportunidad — seguimiento julio</span></td>
-        </tr>
-        <tr style="border-bottom:1px solid #f0f0f0;background:#fafafa;">
-          <td style="padding:9px 12px;color:#6b7280;white-space:nowrap;">18/06/2026</td>
-          <td style="padding:9px 12px;font-weight:600;">Matías Pisani</td>
-          <td style="padding:9px 12px;">Lab. Soubeiran Chobet</td>
-          <td style="padding:9px 12px;"><span style="background:#dbeafe;color:#1e40af;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Salud</span></td>
-          <td style="padding:9px 12px;color:#374151;font-style:italic;">"Si querés, envialo. Por el momento estamos cubiertos pero los tendremos en cuenta."</td>
-          <td style="padding:9px 12px;"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">✅ Brochure enviado</span></td>
-        </tr>
-        <tr style="border-bottom:1px solid #f0f0f0;">
-          <td style="padding:9px 12px;color:#6b7280;white-space:nowrap;">19/06/2026</td>
-          <td style="padding:9px 12px;font-weight:600;">Marcelo Triviño</td>
-          <td style="padding:9px 12px;">Ualá</td>
-          <td style="padding:9px 12px;"><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Finanzas</span></td>
-          <td style="padding:9px 12px;color:#374151;font-style:italic;">"Sí puedes enviarlo así lo miramos. Muchas gracias."</td>
-          <td style="padding:9px 12px;"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">✅ Brochure enviado</span></td>
-        </tr>
-        <tr style="border-bottom:1px solid #f0f0f0;background:#fafafa;">
-          <td style="padding:9px 12px;color:#6b7280;white-space:nowrap;">22/06/2026</td>
-          <td style="padding:9px 12px;font-weight:600;">Martín Nazar</td>
-          <td style="padding:9px 12px;">Sanatorio Mater Dei</td>
-          <td style="padding:9px 12px;"><span style="background:#dbeafe;color:#1e40af;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Salud</span></td>
-          <td style="padding:9px 12px;color:#374151;font-style:italic;">"Podés enviarme el brochure institucional para conocer más sobre sus servicios."</td>
-          <td style="padding:9px 12px;"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">✅ Brochure enviado</span></td>
-        </tr>
-        <tr style="border-bottom:1px solid #f0f0f0;background:#fafafa;">
-          <td style="padding:9px 12px;color:#6b7280;white-space:nowrap;">24/06/2026</td>
-          <td style="padding:9px 12px;font-weight:600;">Nicolás Bojanich</td>
-          <td style="padding:9px 12px;">Sanatorio San Británico</td>
-          <td style="padding:9px 12px;"><span style="background:#dbeafe;color:#1e40af;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Salud</span></td>
-          <td style="padding:9px 12px;color:#374151;font-style:italic;">"Enviame el brochure y toda la información relevante sobre los servicios que ofrecen."</td>
-          <td style="padding:9px 12px;"><span style="background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">⚠️ Brochure pendiente de envío</span></td>
+        <tr>
+          <td data-label="Fecha"><span style="color:#6b7280;white-space:nowrap;">24/06/2026</span></td>
+          <td data-label="Nombre"><strong>Nicolás Bojanich</strong></td>
+          <td data-label="Empresa">Sanatorio San Británico</td>
+          <td data-label="Vertical"><span style="background:#dbeafe;color:#1e40af;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Salud</span></td>
+          <td data-label="Respuesta"><em>"Enviame el brochure y toda la información relevante sobre los servicios que ofrecen."</em></td>
+          <td data-label="Estado"><span style="background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">⚠️ Brochure pendiente</span></td>
         </tr>
         <tr>
-          <td style="padding:9px 12px;color:#6b7280;white-space:nowrap;">23/06/2026</td>
-          <td style="padding:9px 12px;font-weight:600;">Luis Alberto Velázquez</td>
-          <td style="padding:9px 12px;">Bolsa de Comercio BA</td>
-          <td style="padding:9px 12px;"><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Finanzas</span></td>
-          <td style="padding:9px 12px;color:#374151;font-style:italic;">"Sin problemas, mandame info de la empresa y de los productos y servicios."</td>
-          <td style="padding:9px 12px;"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">✅ Brochure enviado</span></td>
+          <td data-label="Fecha"><span style="color:#6b7280;white-space:nowrap;">23/06/2026</span></td>
+          <td data-label="Nombre"><strong>Luis Alberto Velázquez</strong></td>
+          <td data-label="Empresa">Bolsa de Comercio BA</td>
+          <td data-label="Vertical"><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Finanzas</span></td>
+          <td data-label="Respuesta"><em>"Sin problemas, mandame info de la empresa y de los productos y servicios."</em></td>
+          <td data-label="Estado"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">✅ Brochure enviado</span></td>
+        </tr>
+        <tr>
+          <td data-label="Fecha"><span style="color:#6b7280;white-space:nowrap;">22/06/2026</span></td>
+          <td data-label="Nombre"><strong>Martín Nazar</strong></td>
+          <td data-label="Empresa">Sanatorio Mater Dei</td>
+          <td data-label="Vertical"><span style="background:#dbeafe;color:#1e40af;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Salud</span></td>
+          <td data-label="Respuesta"><em>"Podés enviarme el brochure institucional para conocer más sobre sus servicios."</em></td>
+          <td data-label="Estado"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">✅ Brochure enviado</span></td>
+        </tr>
+        <tr>
+          <td data-label="Fecha"><span style="color:#6b7280;white-space:nowrap;">19/06/2026</span></td>
+          <td data-label="Nombre"><strong>Marcelo Triviño</strong></td>
+          <td data-label="Empresa">Ualá</td>
+          <td data-label="Vertical"><span style="background:#ede9fe;color:#5b21b6;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Finanzas</span></td>
+          <td data-label="Respuesta"><em>"Sí puedes enviarlo así lo miramos. Muchas gracias."</em></td>
+          <td data-label="Estado"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">✅ Brochure enviado</span></td>
+        </tr>
+        <tr>
+          <td data-label="Fecha"><span style="color:#6b7280;white-space:nowrap;">18/06/2026</span></td>
+          <td data-label="Nombre"><strong>Matías Pisani</strong></td>
+          <td data-label="Empresa">Lab. Soubeiran Chobet</td>
+          <td data-label="Vertical"><span style="background:#dbeafe;color:#1e40af;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Salud</span></td>
+          <td data-label="Respuesta"><em>"Por el momento estamos cubiertos pero los tendremos en cuenta."</em></td>
+          <td data-label="Estado"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">✅ Brochure enviado</span></td>
+        </tr>
+        <tr>
+          <td data-label="Fecha"><span style="color:#6b7280;white-space:nowrap;">10/06/2026</span></td>
+          <td data-label="Nombre"><strong>Valeria Cellerino</strong></td>
+          <td data-label="Empresa">Sanatorio Americano SA</td>
+          <td data-label="Vertical"><span style="background:#dbeafe;color:#1e40af;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Salud</span></td>
+          <td data-label="Respuesta"><em>"Volvé a escribirme la primera semana de julio para coordinar."</em></td>
+          <td data-label="Estado"><span style="background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">🎯 Seguimiento julio</span></td>
         </tr>
       </tbody>
     </table>
@@ -365,11 +373,11 @@
 // DATOS BASE (desde Excel, colores)
 // =====================================================
 const BASE_DATA = {
-  'Salud':             { total: 352, enviados: 174, respondieron: 7,  sinEmail: 156, libres: 15,  oportunidades: 2 },
+  'Salud':             { total: 352, enviados: 189, respondieron: 7,  sinEmail: 156, libres: 0,   oportunidades: 0 },
   'Seguros':           { total: 230, enviados: 127, respondieron: 2,  sinEmail: 79,  libres: 22,  oportunidades: 0 },
   'Energía y Minería': { total: 142, enviados: 0,   respondieron: 0,  sinEmail: 2,   libres: 140, oportunidades: 0 },
   'Agro':              { total: 161, enviados: 152, respondieron: 1,  sinEmail: 6,   libres: 2,   oportunidades: 0 },
-  'Finanzas':          { total: 207, enviados: 140, respondieron: 2,  sinEmail: 12,  libres: 53,  oportunidades: 2 },
+  'Finanzas':          { total: 207, enviados: 193, respondieron: 2,  sinEmail: 12,  libres: 0,   oportunidades: 2 },
   'Industria':         { total: 103, enviados: 0,   respondieron: 0,  sinEmail: 1,   libres: 102, oportunidades: 0 },
   'Logística':         { total: 155, enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 155, oportunidades: 0 },
   'Tecnología-Telco':  { total: 355, enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 355, oportunidades: 0 },
