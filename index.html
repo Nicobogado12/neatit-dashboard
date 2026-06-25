@@ -306,7 +306,7 @@
 }
 </style>
 <div class="panel" style="margin-top:16px;margin-bottom:16px;">
-  <div class="panel-header"><h2>📬 Respuestas recibidas — Brochure & Seguimiento</h2><span style="font-size:11px;color:#888;">Al 24/06/2026 · 6 contactos</span></div>
+  <div class="panel-header"><h2>📬 Respuestas recibidas — Brochure & Seguimiento</h2><span style="font-size:11px;color:#888;">Al 25/06/2026 · 10 contactos</span></div>
   <div style="overflow-x:auto;">
     <table class="resp-table">
       <thead>
@@ -363,6 +363,38 @@
           <td data-label="Respuesta"><em>"Volvé a escribirme la primera semana de julio para coordinar."</em></td>
           <td data-label="Estado"><span style="background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">🎯 Seguimiento julio</span></td>
         </tr>
+        <tr>
+          <td data-label="Fecha"><span style="color:#6b7280;white-space:nowrap;">25/06/2026</span></td>
+          <td data-label="Nombre"><strong>Daniel Himitian</strong></td>
+          <td data-label="Empresa">Celsur Logística S.A.</td>
+          <td data-label="Vertical"><span style="background:#dcfce7;color:#166534;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Logística</span></td>
+          <td data-label="Respuesta"><em>"Pongo en copia a Mariano Juzt, gerente de sistemas e ingeniería."</em></td>
+          <td data-label="Estado"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">🔥 Lead caliente</span></td>
+        </tr>
+        <tr>
+          <td data-label="Fecha"><span style="color:#6b7280;white-space:nowrap;">25/06/2026</span></td>
+          <td data-label="Nombre"><strong>Marcelo Toledo</strong></td>
+          <td data-label="Empresa">ANJOR</td>
+          <td data-label="Vertical"><span style="background:#dcfce7;color:#166534;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Logística</span></td>
+          <td data-label="Respuesta"><em>"Ese tema lo debés ver con nuestra casa matriz en Córdoba."</em></td>
+          <td data-label="Estado"><span style="background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">⏳ Seguimiento HQ</span></td>
+        </tr>
+        <tr>
+          <td data-label="Fecha"><span style="color:#6b7280;white-space:nowrap;">25/06/2026</span></td>
+          <td data-label="Nombre"><strong>Eduardo Di Meglio</strong></td>
+          <td data-label="Empresa">Fast Track</td>
+          <td data-label="Vertical"><span style="background:#dcfce7;color:#166534;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Logística</span></td>
+          <td data-label="Respuesta"><em>"Toda oferta debe iniciarse a través de nuestro sitio web."</em></td>
+          <td data-label="Estado"><span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">✅ Respondido</span></td>
+        </tr>
+        <tr>
+          <td data-label="Fecha"><span style="color:#6b7280;white-space:nowrap;">25/06/2026</span></td>
+          <td data-label="Nombre"><strong>Facundo Gimenez</strong></td>
+          <td data-label="Empresa">Aprile Freight Forwarding</td>
+          <td data-label="Vertical"><span style="background:#dcfce7;color:#166534;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600;">Logística</span></td>
+          <td data-label="Respuesta"><em>"IT lo manejan desde Italia, no tenemos injerencia desde acá."</em></td>
+          <td data-label="Estado"><span style="background:#f3f4f6;color:#6b7280;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600;">❌ IT centralizado</span></td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -379,11 +411,13 @@ const BASE_DATA = {
   'Agro':              { total: 161, enviados: 152, respondieron: 1,  sinEmail: 6,   libres: 2,   oportunidades: 0 },
   'Finanzas':          { total: 207, enviados: 193, respondieron: 2,  sinEmail: 12,  libres: 0,   oportunidades: 2 },
   'Industria':         { total: 103, enviados: 0,   respondieron: 0,  sinEmail: 1,   libres: 102, oportunidades: 0 },
-  'Logística':         { total: 155, enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 155, oportunidades: 0 },
+  'Logística':         { total: 155, enviados: 152, respondieron: 4,  sinEmail: 3,   libres: 0,   oportunidades: 0 },
   'Tecnología-Telco':  { total: 355, enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 355, oportunidades: 0 },
   'Comercio':          { total: 45,  enviados: 0,   respondieron: 0,  sinEmail: 0,   libres: 45,  oportunidades: 0 },
   'Otros':             { total: 197, enviados: 9,   respondieron: 0,  sinEmail: 1,   libres: 187, oportunidades: 0 },
   'Ingenima':          { total: 138, enviados: 117, respondieron: 1,  sinEmail: 0,   libres: 20,  oportunidades: 1 },
+  'Chile Salud':       { total: 57,  enviados: 55,  respondieron: 0,  sinEmail: 2,   libres: 0,   oportunidades: 0 },
+  'Uruguay Salud':     { total: 17,  enviados: 16,  respondieron: 0,  sinEmail: 1,   libres: 0,   oportunidades: 0 },
 };
 
 // Oportunidades guardadas localmente (sobrescriben BASE_DATA)
@@ -758,3 +792,4 @@ window.addEventListener('resize', () => {
 </script>
 </body>
 </html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
