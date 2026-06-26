@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeatIT · Dashboard Ejecutivo Cold Mail</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f6fd;--surface:#fff;--border:#ddeaf7;--text:#111827;--muted:#6b7280;
+  --accent:#3DA2EA;--accent2:#6E42B1;
+  --green:#10b981;--orange:#f59e0b;--red:#ef4444;--blue:#3b82f6;
+  --hot:#dc2626;--warm:#d97706;--cold:#64748b;
+  --shadow:0 1px 8px rgba(61,162,234,0.12);--radius:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.topbar{height:5px;background:linear-gradient(90deg,#3DA2EA 0%,#6E42B1 50%,#10b981 100%)}
+
+/* HEADER */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.header-left{display:flex;align-items:center;gap:14px}
+.logo{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#3DA2EA,#6E42B1);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:18px;flex-shrink:0;box-shadow:0 2px 8px rgba(61,162,234,0.3)}
+.header h1{font-size:18px;font-weight:800;line-height:1.1}
+.header h1 em{color:var(--accent2);font-style:normal}
+.header .sub{font-size:11px;color:var(--muted);margin-top:2px}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.badge-live{display:inline-flex;align-items:center;gap:5px;background:#ecfdf5;color:#059669;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid #a7f3d0}
+.badge-live::before{content:'●';font-size:8px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.ts{font-size:11px;color:var(--muted)}
+
+main{padding:16px 20px;max-width:1200px;margin:0 auto}
+
+/* SECTION */
+.sec{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:22px 0 12px;display:flex;align-items:center;gap:10px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* KPI CARDS */
+.kpi-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:560px){.kpi-row{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:900px){.kpi-row{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1100px){.kpi-row{grid-template-columns:repeat(8,1fr)}}
+.kcard{background:var(--surface);border-radius:var(--radius);padding:14px 15px;box-shadow:var(--shadow);border:1px solid var(--border);position:relative;overflow:hidden}
+.kcard::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kcard.k1::after{background:#3DA2EA}.kcard.k2::after{background:#10b981}.kcard.k3::after{background:#6E42B1}
+.kcard.k4::after{background:#f59e0b}.kcard.k5::after{background:#ef4444}.kcard.k6::after{background:#94a3b8}.kcard.k7::after{background:#8b5cf6}
+.k8::after{background:#059669}
+.kl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:7px}
+.kv{font-size:28px;font-weight:900;line-height:1}
+.ks{font-size:10px;color:var(--muted);margin-top:4px}
+.k1 .kv{color:#3DA2EA}.k2 .kv{color:#10b981}.k3 .kv{color:#6E42B1}
+.k4 .kv{color:#f59e0b}.k5 .kv{color:#ef4444}.k6 .kv{color:#94a3b8}.k7 .kv{color:#8b5cf6}.k8 .kv{color:#059669}
+
+/* COVERAGE BAR */
+.covbar{background:var(--surface);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.covrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+.covrow span{font-size:12px;font-weight:600}
+.covrow strong{font-size:18px;color:var(--green);font-weight:900}
+.track{height:12px;background:#e5e7eb;border-radius:10px;overflow:hidden;display:flex}
+.fill-env{background:#3DA2EA}.fill-bor{background:#c4b5fd}.fill-lib{background:#e5e7eb}
+.cov-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:10px;color:var(--muted)}
+.cl-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}
+
+/* CHARTS */
+.charts3{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:700px){.charts3{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.charts3{grid-template-columns:2fr 1fr}}
+.cpanel{background:var(--surface);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.cpanel h3{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:14px}
+.cwrap{position:relative}
+.h200{height:200px}.h260{height:260px}.h320{height:320px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:760px}
+thead th{background:#f1f5f9;padding:9px 10px;text-align:left;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border-bottom:2px solid var(--border);white-space:nowrap}
+tbody td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:hover{background:#f8fafc}
+tbody tr.total-row{background:#f1f5f9;font-weight:800}
+tbody tr.total-row td{border-top:2px solid var(--border)}
+.num{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.num.env{color:#3DA2EA}.num.res{color:#6E42B1}.num.reb{color:#f59e0b}
+.num.lib{color:#94a3b8}.num.comp{color:#ef4444}.num.sin{color:#9ca3af}
+.rate-cell{min-width:100px}
+.pct-bar{display:flex;align-items:center;gap:5px}
+.pct-track{height:5px;background:#e5e7eb;border-radius:5px;flex:1;overflow:hidden}
+.pct-fill{height:100%;border-radius:5px}
+.status-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;white-space:nowrap}
+.st-ok{background:#eff6ff;color:#2563eb}
+.st-wip{background:#fefce8;color:#d97706}
+.st-pend{background:#fef2f2;color:#dc2626}
+.st-done{background:#f0fdf4;color:#16a34a}
+
+/* COUNTRY BLOCKS */
+.cblock{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:12px}
+.cbhead{padding:14px 16px;background:linear-gradient(135deg,#f8fafc,#eff6ff);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cbhead h2{font-size:15px;font-weight:800}
+.cbheadstats{display:flex;gap:16px;margin-left:auto;flex-wrap:wrap}
+.chs{text-align:right}
+.chs .chv{font-size:16px;font-weight:800}
+.chs .chl{font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:700}
+.chs.env .chv{color:#3DA2EA}.chs.res .chv{color:#6E42B1}.chs.reb .chv{color:#f59e0b}
+.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:1px solid var(--border)}
+@media(max-width:500px){.vgrid{grid-template-columns:1fr}}
+.vcard{padding:14px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.vcard:nth-child(even){border-right:none}
+.vchead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.vchead h4{font-size:13px;font-weight:700}
+.vtag{font-size:8px;font-weight:800;padding:2px 7px;border-radius:20px;text-transform:uppercase;flex-shrink:0}
+.vtag.ar{background:#eff6ff;color:#2563eb}.vtag.cl{background:#fef3c7;color:#d97706}.vtag.uy{background:#f0fdf4;color:#16a34a}
+.vtag.done{background:#dcfce7;color:#15803d}.vtag.wip{background:#fef9c3;color:#a16207}.vtag.pend{background:#fef2f2;color:#b91c1c}
+.pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.pill{display:flex;flex-direction:column;align-items:center;background:#f8fafc;border:1px solid #e5e7eb;border-radius:7px;padding:6px 8px;flex:1;min-width:48px;text-align:center}
+.pill .pv{font-size:17px;font-weight:900;line-height:1}
+.pill .pl{font-size:7px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-top:2px;letter-spacing:.3px}
+.pill.env .pv{color:#3DA2EA}.pill.res .pv{color:#6E42B1}.pill.reb .pv{color:#f59e0b}
+.pill.lib .pv{color:#94a3b8}.pill.comp .pv{color:#ef4444}.pill.sin .pv{color:#9ca3af}.pill.bor .pv{color:#8b5cf6}
+.mbar .mbrow{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:3px}
+.mtrack{height:5px;background:#e5e7eb;border-radius:5px;overflow:hidden;display:flex}
+.menv{background:#3DA2EA}.mres{background:#6E42B1}.mreb{background:#f59e0b}.mcomp{background:#fca5a5}.mlib{background:#cbd5e1}.mbor{background:#c4b5fd}
+
+/* NOVEDADES */
+.nov-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.nf-btn{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:11px;font-weight:600;color:var(--muted);transition:all .15s}
+.nf-btn.active{color:#fff}
+.nf-btn[data-f="all"].active{background:#64748b;border-color:#64748b}
+.nf-btn[data-f="hot"].active{background:#dc2626;border-color:#dc2626}
+.nf-btn[data-f="resp"].active{background:#6E42B1;border-color:#6E42B1}
+.nf-btn[data-f="reb"].active{background:#f59e0b;border-color:#f59e0b}
+.nf-btn[data-f="neg"].active{background:#64748b;border-color:#64748b}
+.nf-btn[data-f="oport"].active{background:#059669;border-color:#059669}
+
+.nov-grid{display:grid;gap:8px}
+.nov-item{background:var(--surface);border-radius:10px;padding:13px 15px;box-shadow:var(--shadow);border:1px solid var(--border);border-left:4px solid;transition:transform .1s}
+.nov-item:hover{transform:translateX(2px)}
+.nov-item.hot{border-left-color:#dc2626}
+.nov-item.resp{border-left-color:#6E42B1}
+.nov-item.neg{border-left-color:#94a3b8}
+.nov-item.reb{border-left-color:#f59e0b}
+.nov-item.gdpr{border-left-color:#ef4444}
+.nov-item.oport{border-left-color:#059669;background:linear-gradient(135deg,#f0fdf4,#fff)}
+.nov-meta{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;flex-wrap:wrap}
+.nov-name{font-size:13px;font-weight:800}
+.nov-co{font-size:12px;color:var(--muted)}
+.nov-email{font-size:10px;color:#3DA2EA;word-break:break-all;margin-bottom:3px}
+.nov-badge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;text-transform:uppercase;flex-shrink:0;margin-left:auto}
+.nb-hot{background:#fef2f2;color:#dc2626}
+.nb-resp{background:#ede9fe;color:#6E42B1}
+.nb-neg{background:#f1f5f9;color:#475569}
+.nb-reb{background:#fef3c7;color:#d97706}
+.nb-gdpr{background:#fee2e2;color:#b91c1c}
+.nb-oport{background:#dcfce7;color:#059669;border:1px solid #86efac}
+.nov-note{font-size:11px;color:var(--muted);font-style:italic}
+.nov-footer{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap}
+.nov-vert{font-size:9px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:.4px}
+.nov-action{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:#eff6ff;color:#2563eb}
+
+/* REBOTES TABLE */
+.reb-grid{display:grid;grid-template-columns:1fr;gap:0}
+.reb-item{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--surface);font-size:12px}
+.reb-item:last-child{border-bottom:none}
+.reb-item:hover{background:#fef9f0}
+.reb-email{color:var(--muted);font-size:11px}
+.reb-co{font-weight:700}
+.reb-type{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.rt-perm{background:#fef3c7;color:#d97706}
+.rt-block{background:#fee2e2;color:#dc2626}
+.rt-dns{background:#fef2f2;color:#b91c1c}
+
+/* RECOMENDACIONES */
+.recs{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:700px){.recs{grid-template-columns:repeat(2,1fr)}}
+.rec{background:var(--surface);border-radius:var(--radius);padding:15px;box-shadow:var(--shadow);border:1px solid var(--border);border-top:3px solid}
+.rec.hot{border-top-color:#dc2626}
+.rec.warn{border-top-color:#f59e0b}
+.rec.go{border-top-color:#10b981}
+.rec.info{border-top-color:#3DA2EA}
+.rec-icon{font-size:20px;margin-bottom:8px}
+.rec h4{font-size:13px;font-weight:800;margin-bottom:6px}
+.rec p{font-size:12px;color:var(--muted);line-height:1.5}
+.rec .targets{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px}
+.rec .tg{font-size:10px;font-weight:700;background:#f1f5f9;color:#374151;padding:2px 7px;border-radius:6px}
+
+/* FOOTER */
+.footer{background:var(--surface);border-top:1px solid var(--border);padding:14px 20px;text-align:center;font-size:11px;color:var(--muted);margin-top:24px}
+.footer strong{color:var(--accent2)}
+
+/* CMD BOX */
+.cmd-box{background:#1e293b;border-radius:var(--radius);padding:16px;font-family:'Courier New',monospace;font-size:13px;color:#e2e8f0;margin-top:12px}
+.cmd-box .cmd-line{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.cmd-box .cmd-line:last-child{margin-bottom:0}
+.cmd-prompt{color:#6E42B1;font-weight:700}
+.cmd-text{color:#7dd3fc}
+.cmd-comment{color:#475569;font-size:11px}
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">N</div>
+    <div>
+      <h1>NeatIT · <em>Dashboard Ejecutivo Cold Mail</em></h1>
+      <div class="sub">Campaña de prospección comercial · Análisis completo · Todos los países y verticales</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="badge-live">Live · Datos verificados Gmail + Excel</span>
+    <div class="ts" id="ts"></div>
+  </div>
+</div>
+
+<main>
+
+<!-- KPIs GLOBALES -->
+<div class="sec">Indicadores clave de campaña</div>
+<div class="kpi-row">
+  <div class="kcard k1">
+    <div class="kl">Universo real</div>
+    <div class="kv">1.790</div>
+    <div class="ks" style="display:flex;flex-direction:column;gap:1px">
+      <span>12 verticales · 3 países</span>
+      <span style="color:#94a3b8;font-size:10px">2.133 total BBDD</span>
+    </div>
+  </div>
+  <div class="kcard k2">
+    <div class="kl">Enviados</div>
+    <div class="kv">1.188</div>
+    <div class="ks">del universo con email</div>
+  </div>
+  <div class="kcard k3">
+    <div class="kl">Respuestas</div>
+    <div class="kv">19</div>
+    <div class="ks">1.60% reply rate</div>
+  </div>
+  <div class="kcard k4">
+    <div class="kl">Rebotes</div>
+    <div class="kv">36</div>
+    <div class="ks">3.03% bounce rate</div>
+  </div>
+  <div class="kcard k5">
+    <div class="kl">Sin email</div>
+    <div class="kv">240</div>
+    <div class="ks">11.3% del universo</div>
+  </div>
+  <div class="kcard k6">
+    <div class="kl">Pendientes</div>
+    <div class="kv">614</div>
+    <div class="ks">Libres + borradores</div>
+  </div>
+  <div class="kcard k7">
+    <div class="kl">🔥 Hot Leads</div>
+    <div class="kv">7</div>
+    <div class="ks">Brochure · Referido · Follow-up</div>
+  </div>
+  <div class="kcard k8">
+    <div class="kl">🎯 Oportunidades</div>
+    <div class="kv">2</div>
+    <div class="ks">Pipeline julio · AR</div>
+  </div>
+</div>
+
+<!-- COBERTURA -->
+<div class="covbar" style="margin-top:10px">
+  <div class="covrow">
+    <span>Cobertura sobre universo con email (excl. competidores y sin email)</span>
+    <strong>66.3%</strong>
+  </div>
+  <div class="track">
+    <div class="fill-env" style="width:57.1%"></div>
+    <div class="fill-bor" style="width:2.6%"></div>
+    <div class="fill-lib" style="width:40.3%"></div>
+  </div>
+  <div class="cov-legend">
+    <span><span class="cl-dot" style="background:#3DA2EA"></span>Enviados 1.188</span>
+    <span><span class="cl-dot" style="background:#c4b5fd"></span>Borradores listos 53 (AR Finanzas)</span>
+    <span><span class="cl-dot" style="background:#e5e7eb"></span>Libres/Pendientes 561</span>
+    <span><span class="cl-dot" style="background:#fca5a5"></span>Competidores excluidos 103</span>
+    <span><span class="cl-dot" style="background:#9ca3af"></span>Sin email 240</span>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="sec">Análisis por vertical</div>
+<div class="charts3">
+  <div class="cpanel">
+    <h3>Tasa de respuesta por vertical (%)</h3>
+    <div class="cwrap h260"><canvas id="chartReply"></canvas></div>
+  </div>
+  <div class="cpanel">
+    <h3>Distribución global de estados</h3>
+    <div class="cwrap h260"><canvas id="chartDonut"></canvas></div>
+  </div>
+</div>
+<div class="cpanel" style="margin-top:12px">
+  <h3>Enviados vs. universo total por vertical</h3>
+  <div class="cwrap h260"><canvas id="chartBar"></canvas></div>
+</div>
+
+<!-- TABLA RESUMEN -->
+<div class="sec">Resumen completo por vertical</div>
+<div class="cpanel">
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Vertical</th><th>País</th><th class="num">Total BBDD</th><th class="num">Enviados</th>
+          <th class="num">Respond.</th><th class="num">Rebotes</th><th class="num">Sin email</th>
+          <th class="num">Libres</th><th class="num">Comp.</th>
+          <th class="rate-cell">Reply rate</th><th class="rate-cell">Cobertura</th><th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="tblBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ARGENTINA -->
+<div class="sec">🇦🇷 Argentina · 10 verticales · 1.940 contactos</div>
+<div class="cblock">
+  <div class="cbhead">
+    <span style="font-size:22px">🇦🇷</span><h2>Argentina</h2>
+    <div class="cbheadstats">
+      <div class="chs env"><div class="chv">1.006</div><div class="chl">Enviados</div></div>
+      <div class="chs res"><div class="chv">16</div><div class="chl">Respondieron</div></div>
+      <div class="chs reb"><div class="chv">20+</div><div class="chl">Rebotes</div></div>
+    </div>
+  </div>
+  <div class="vgrid">
+    <!-- Logística -->
+    <div class="vcard">
+      <div class="vchead"><h4>🚛 Logística & Transporte</h4><span class="vtag ar done">✅ Completa</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">155</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">147</div><div class="pl">Enviados</div></div>
+        <div class="pill res"><div class="pv">5</div><div class="pl">Respond.</div></div>
+        <div class="pill reb"><div class="pv">3+</div><div class="pl">Rebotes</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Cobertura</span><span style="color:var(--green);font-weight:700">94.8%</span></div><div class="mtrack"><div class="menv" style="width:94.8%"></div></div></div>
+    </div>
+    <!-- Tecnología -->
+    <div class="vcard">
+      <div class="vchead"><h4>💻 Tecnología & Telco</h4><span class="vtag ar done">✅ Completa</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">356</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">253</div><div class="pl">Enviados</div></div>
+        <div class="pill comp"><div class="pv">103</div><div class="pl">Compet.</div></div>
+        <div class="pill res"><div class="pv">0</div><div class="pl">Respond.</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Cobertura excl. comp.</span><span style="color:var(--green);font-weight:700">100%</span></div><div class="mtrack"><div class="menv" style="width:71.1%"></div><div class="mcomp" style="width:28.9%"></div></div></div>
+    </div>
+    <!-- Salud -->
+    <div class="vcard">
+      <div class="vchead"><h4>🏥 Salud, Farma & Bio</h4><span class="vtag ar done">✅ Completa</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">347</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">174</div><div class="pl">Enviados</div></div>
+        <div class="pill res"><div class="pv">7</div><div class="pl">Respond.</div></div>
+        <div class="pill reb"><div class="pv">4+</div><div class="pl">Rebotes</div></div>
+        <div class="pill sin"><div class="pv">152</div><div class="pl">Sin email</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Reply rate</span><span style="color:var(--accent2);font-weight:700">4.0%</span></div><div class="mtrack"><div class="menv" style="width:90.2%"></div></div></div>
+    </div>
+    <!-- Seguros -->
+    <div class="vcard">
+      <div class="vchead"><h4>🛡️ Seguros</h4><span class="vtag ar done">✅ Completa</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">230</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">127</div><div class="pl">Enviados</div></div>
+        <div class="pill res"><div class="pv">2</div><div class="pl">Respond.</div></div>
+        <div class="pill sin"><div class="pv">78</div><div class="pl">Sin email</div></div>
+        <div class="pill lib"><div class="pv">22</div><div class="pl">Libres</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Cobertura excl. sin email</span><span style="color:var(--accent);font-weight:700">85.2%</span></div><div class="mtrack"><div class="menv" style="width:85.2%"></div></div></div>
+    </div>
+    <!-- Agro -->
+    <div class="vcard">
+      <div class="vchead"><h4>🌾 Agro, Ambiente & Alimentos</h4><span class="vtag ar done">✅ Completa</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">158</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">152</div><div class="pl">Enviados</div></div>
+        <div class="pill res"><div class="pv">0</div><div class="pl">Respond.</div></div>
+        <div class="pill reb"><div class="pv">2</div><div class="pl">Rebotes</div></div>
+        <div class="pill sin"><div class="pv">4</div><div class="pl">Sin email</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Cobertura</span><span style="color:var(--green);font-weight:700">98.7%</span></div><div class="mtrack"><div class="menv" style="width:98.7%"></div></div></div>
+    </div>
+    <!-- Finanzas -->
+    <div class="vcard">
+      <div class="vchead"><h4>💰 Finanzas</h4><span class="vtag ar wip">⚡ 53 borradores</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">207</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">141</div><div class="pl">Enviados</div></div>
+        <div class="pill res"><div class="pv">2</div><div class="pl">Respond.</div></div>
+        <div class="pill reb"><div class="pv">11+</div><div class="pl">Rebotes</div></div>
+        <div class="pill bor"><div class="pv">53</div><div class="pl">Borr.</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>53 borradores listos para enviar</span><span style="color:#8b5cf6;font-weight:700">73.1%</span></div><div class="mtrack"><div class="menv" style="width:68.1%"></div><div class="mbor" style="width:25.6%"></div></div></div>
+    </div>
+    <!-- Energía -->
+    <div class="vcard">
+      <div class="vchead"><h4>⚡ Energía & Minería</h4><span class="vtag ar pend">🔴 Sin iniciar</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">142</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">0</div><div class="pl">Enviados</div></div>
+        <div class="pill lib"><div class="pv">140</div><div class="pl">Libres</div></div>
+        <div class="pill sin"><div class="pv">2</div><div class="pl">Sin email</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Sin campaña</span><span style="color:var(--red);font-weight:700">0%</span></div><div class="mtrack"><div class="mlib" style="width:100%"></div></div></div>
+    </div>
+    <!-- Industria -->
+    <div class="vcard">
+      <div class="vchead"><h4>🏗️ Industria & Construcción</h4><span class="vtag ar pend">🔴 Sin iniciar</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">103</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">0</div><div class="pl">Enviados</div></div>
+        <div class="pill lib"><div class="pv">102</div><div class="pl">Libres</div></div>
+        <div class="pill sin"><div class="pv">1</div><div class="pl">Sin email</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Sin campaña</span><span style="color:var(--red);font-weight:700">0%</span></div><div class="mtrack"><div class="mlib" style="width:100%"></div></div></div>
+    </div>
+    <!-- Comercio -->
+    <div class="vcard">
+      <div class="vchead"><h4>🛒 Comercio & Trade</h4><span class="vtag ar wip">🟡 Inicio</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">45</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">2</div><div class="pl">Enviados</div></div>
+        <div class="pill lib"><div class="pv">43</div><div class="pl">Libres</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Cobertura</span><span style="color:var(--orange);font-weight:700">4.4%</span></div><div class="mtrack"><div class="menv" style="width:4.4%"></div><div class="mlib" style="width:95.6%"></div></div></div>
+    </div>
+    <!-- Otros -->
+    <div class="vcard">
+      <div class="vchead"><h4>🏢 Otros sectores</h4><span class="vtag ar wip">🟡 Inicio</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">197</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">10</div><div class="pl">Enviados</div></div>
+        <div class="pill lib"><div class="pv">186</div><div class="pl">Libres</div></div>
+        <div class="pill sin"><div class="pv">1</div><div class="pl">Sin email</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Cobertura</span><span style="color:var(--orange);font-weight:700">5.1%</span></div><div class="mtrack"><div class="menv" style="width:5.1%"></div><div class="mlib" style="width:94.9%"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHILE -->
+<div class="sec">🇨🇱 Chile · 2 verticales · 143 contactos</div>
+<div class="cblock">
+  <div class="cbhead">
+    <span style="font-size:22px">🇨🇱</span><h2>Chile</h2>
+    <div class="cbheadstats">
+      <div class="chs env"><div class="chv">134</div><div class="chl">Enviados</div></div>
+      <div class="chs res"><div class="chv">2</div><div class="chl">Respondieron</div></div>
+      <div class="chs reb"><div class="chv">7</div><div class="chl">Rebotes</div></div>
+    </div>
+  </div>
+  <div class="vgrid">
+    <div class="vcard">
+      <div class="vchead"><h4>💰 Finanzas & Seguros</h4><span class="vtag cl done">✅ Completa</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">86</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">79</div><div class="pl">Enviados</div></div>
+        <div class="pill res"><div class="pv">1</div><div class="pl">Respond.</div></div>
+        <div class="pill reb"><div class="pv">5</div><div class="pl">Rebotes</div></div>
+        <div class="pill sin"><div class="pv">1</div><div class="pl">Sin email</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>4 BICE + Socofin rebotaron</span><span style="color:var(--accent);font-weight:700">92.9%</span></div><div class="mtrack"><div class="menv" style="width:92.9%"></div></div></div>
+    </div>
+    <div class="vcard">
+      <div class="vchead"><h4>🏥 Salud, Farma & Bio</h4><span class="vtag cl done">✅ Completa</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">57</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">55</div><div class="pl">Enviados</div></div>
+        <div class="pill res"><div class="pv">1</div><div class="pl">Respond.</div></div>
+        <div class="pill reb"><div class="pv">2</div><div class="pl">Rebotes</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Cobertura</span><span style="color:var(--green);font-weight:700">96.5%</span></div><div class="mtrack"><div class="menv" style="width:96.5%"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- URUGUAY -->
+<div class="sec">🇺🇾 Uruguay · 2 verticales · 50 contactos</div>
+<div class="cblock">
+  <div class="cbhead">
+    <span style="font-size:22px">🇺🇾</span><h2>Uruguay</h2>
+    <div class="cbheadstats">
+      <div class="chs env"><div class="chv">48</div><div class="chl">Enviados</div></div>
+      <div class="chs res"><div class="chv">1</div><div class="chl">Respondieron</div></div>
+      <div class="chs reb"><div class="chv">2</div><div class="chl">Rebotes</div></div>
+    </div>
+  </div>
+  <div class="vgrid">
+    <div class="vcard">
+      <div class="vchead"><h4>💰 Finanzas & Banca</h4><span class="vtag uy done">✅ Completa</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">33</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">32</div><div class="pl">Enviados</div></div>
+        <div class="pill res"><div class="pv">0</div><div class="pl">Respond.</div></div>
+        <div class="pill reb"><div class="pv">1</div><div class="pl">Rebotes</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Cobertura</span><span style="color:var(--green);font-weight:700">97.0%</span></div><div class="mtrack"><div class="menv" style="width:97%"></div></div></div>
+    </div>
+    <div class="vcard">
+      <div class="vchead"><h4>🏥 Salud, Farma & Bio</h4><span class="vtag uy done">✅ Completa</span></div>
+      <div class="pills">
+        <div class="pill"><div class="pv">17</div><div class="pl">Total</div></div>
+        <div class="pill env"><div class="pv">16</div><div class="pl">Enviados</div></div>
+        <div class="pill res"><div class="pv">1</div><div class="pl">Respond.</div></div>
+        <div class="pill reb"><div class="pv">1</div><div class="pl">Rebotes</div></div>
+      </div>
+      <div class="mbar"><div class="mbrow"><span>Cobertura</span><span style="color:var(--green);font-weight:700">94.1%</span></div><div class="mtrack"><div class="menv" style="width:94.1%"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOVEDADES -->
+<div class="sec">🔔 Novedades · 19 interacciones confirmadas vía Gmail</div>
+<div class="nov-filters">
+  <button class="nf-btn active" data-f="all">Todas (19)</button>
+  <button class="nf-btn" data-f="hot">🔥 Hot Leads (7)</button>
+  <button class="nf-btn" data-f="resp">💬 Respondieron (8)</button>
+  <button class="nf-btn" data-f="reb">⚠️ Rechazos/Rebotes (2)</button>
+  <button class="nf-btn" data-f="oport">🎯 Oportunidades (2)</button>
+  <button class="nf-btn" data-f="neg">❌ No interesados (2)</button>
+</div>
+<div class="nov-grid" id="novGrid"></div>
+
+<!-- REBOTES DETALLADOS -->
+<div class="sec">⚠️ Rebotes detallados · 36 emails fallidos confirmados en Gmail</div>
+<div class="cpanel">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex-wrap:wrap">
+    <div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:8px">🇦🇷 AR Finanzas · 11+ rebotes</div>
+      <div class="reb-grid" style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+        <div class="reb-item"><div><div class="reb-co">Banco Columbia</div><div class="reb-email">marcelo.marinucci@bancocolumbia.com.ar</div></div><span class="reb-type rt-block">Trend Micro</span></div>
+        <div class="reb-item"><div><div class="reb-co">Banco Columbia</div><div class="reb-email">conforti.pablo@bancocolumbia.com.ar</div></div><span class="reb-type rt-block">Trend Micro</span></div>
+        <div class="reb-item"><div><div class="reb-co">Banco San Juan</div><div class="reb-email">maria.eugenia / dcorrea / jdelgado</div></div><span class="reb-type rt-block">3× Trend Micro</span></div>
+        <div class="reb-item"><div><div class="reb-co">Banco TDF</div><div class="reb-email">carias@bancotdf.com.ar</div></div><span class="reb-type rt-block">Bloqueado</span></div>
+        <div class="reb-item"><div><div class="reb-co">Banco Comafi</div><div class="reb-email">nmontes@bancocomafi.com.ar</div></div><span class="reb-type rt-dns">DNS Error</span></div>
+        <div class="reb-item"><div><div class="reb-co">Banco Credicoop</div><div class="reb-email">dportillo@bancocredicoop.com.ar</div></div><span class="reb-type rt-perm">Mal config.</span></div>
+        <div class="reb-item"><div><div class="reb-co">Banco del Chubut</div><div class="reb-email">jcvazquez@bancodelchubut.com.ar</div></div><span class="reb-type rt-dns">Dominio no existe</span></div>
+        <div class="reb-item"><div><div class="reb-co">Banco del Sol</div><div class="reb-email">mruiz@bancodelsolonline.com.ar</div></div><span class="reb-type rt-dns">Dominio no existe</span></div>
+        <div class="reb-item"><div><div class="reb-co">Payana</div><div class="reb-email">jditoma@payana.la</div></div><span class="reb-type rt-perm">No encontrado</span></div>
+        <div class="reb-item"><div><div class="reb-co">Trasa Arg (×2)</div><div class="reb-email">nicolas.curtelo / mariano.landro</div></div><span class="reb-type rt-perm">DNS Failure</span></div>
+        <div class="reb-item"><div><div class="reb-co">Global Processing</div><div class="reb-email">matias.sebastian@globalprocessing.com.ar</div></div><span class="reb-type rt-block">Trend Micro</span></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:8px">🇦🇷 AR Salud · rebotes</div>
+      <div class="reb-grid" style="border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px">
+        <div class="reb-item"><div><div class="reb-co">Adium Argentina</div><div class="reb-email">radiaz@adium.com.ar</div></div><span class="reb-type rt-perm">No encontrado</span></div>
+        <div class="reb-item"><div><div class="reb-co">Log-In Farma</div><div class="reb-email">mauro.bianchi@log-in.com.ar</div></div><span class="reb-type rt-perm">No encontrado</span></div>
+        <div class="reb-item"><div><div class="reb-co">Laboratorios Lazar</div><div class="reb-email">frontier@sinectis.com.ar</div></div><span class="reb-type rt-perm">No encontrado</span></div>
+        <div class="reb-item"><div><div class="reb-co">Alexander Fleming</div><div class="reb-email">aaranguren@alexanderfleming.or</div></div><span class="reb-type rt-dns">Dominio incompleto (.or)</span></div>
+        <div class="reb-item"><div><div class="reb-co">Diagnóstico Maipú</div><div class="reb-email">analiamanildo@diagnosticomaipu.com.ar</div></div><span class="reb-type rt-perm">No encontrado</span></div>
+      </div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--muted);margin-bottom:8px">🇨🇱 Chile Finanzas · 5 rebotes BICE + Socofin</div>
+      <div class="reb-grid" style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+        <div class="reb-item"><div><div class="reb-co">BICE Inversiones (×4)</div><div class="reb-email">rodriguez.cristobal / cecilia.dueik / renato.oportus / arriagada.erika</div></div><span class="reb-type rt-perm">Servidor rechaza</span></div>
+        <div class="reb-item"><div><div class="reb-co">Socofin S.A.</div><div class="reb-email">octavio.vargas@socofin.cl</div></div><span class="reb-type rt-perm">No encontrado</span></div>
+      </div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--muted);margin:12px 0 8px">🇦🇷 AR Logística · rebotes</div>
+      <div class="reb-grid" style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+        <div class="reb-item"><div><div class="reb-co">Buspack</div><div class="reb-email">vanesa.noemi@buspack.com.ar</div></div><span class="reb-type rt-perm">Permanente</span></div>
+        <div class="reb-item"><div><div class="reb-co">Celsur (2do contacto)</div><div class="reb-email">mandresgarro@celsur.com.ar</div></div><span class="reb-type rt-perm">No encontrado</span></div>
+      </div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--muted);margin:12px 0 8px">🇺🇾 UY Salud · 🇨🇱 CL Salud</div>
+      <div class="reb-grid" style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+        <div class="reb-item"><div><div class="reb-co">Farmashop (UY)</div><div class="reb-email">fzito@farmashop.com.uy</div></div><span class="reb-type rt-perm">Permanente</span></div>
+        <div class="reb-item"><div><div class="reb-co">FALP (CL)</div><div class="reb-email">diego.maihuire@falp.org</div></div><span class="reb-type rt-block">Bloqueado</span></div>
+        <div class="reb-item"><div><div class="reb-co">Clínica INDISA (CL)</div><div class="reb-email">maria.delourdes@indisa.cl</div></div><span class="reb-type rt-perm">Usuario no existe</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECOMENDACIONES -->
+<div class="sec">🎯 Recomendaciones para el directorio</div>
+<div class="recs">
+  <div class="rec hot">
+    <div class="rec-icon">🔥</div>
+    <h4>Prioridad 1 — Cerrar 7 Hot Leads ahora</h4>
+    <p>Hay 7 contactos que solicitaron brochure o refirieron a un decisor IT. Necesitan seguimiento comercial esta semana antes de perder el momentum.</p>
+    <div class="targets">
+      <span class="tg">Salaverri → Verónica Hernandez (Codylsa)</span>
+      <span class="tg">Himitian → Mariano Juzt (Celsur)</span>
+      <span class="tg">Shaw → Christian Nuñez (Urufarma)</span>
+      <span class="tg">Velazquez (LaBolsa)</span>
+      <span class="tg">Trivino (Uala)</span>
+      <span class="tg">Bojanich (San Británico)</span>
+      <span class="tg">Nazar (Mater Dei)</span>
+    </div>
+  </div>
+  <div class="rec warn">
+    <div class="rec-icon">⚡</div>
+    <h4>Prioridad 2 — Enviar 53 borradores de AR Finanzas</h4>
+    <p>Hay 53 drafts listos en Gmail para AR Finanzas. Con un reply rate actual de 1.4%, eso equivale a ~1 respuesta adicional potencial. Enviar esta semana.</p>
+    <div class="targets"><span class="tg">AR Finanzas · 53 drafts en Gmail</span></div>
+  </div>
+  <div class="rec go">
+    <div class="rec-icon">🚀</div>
+    <h4>Prioridad 3 — Iniciar 4 verticales sin campaña</h4>
+    <p>Energía, Industria, Comercio y Otros tienen 487 contactos libres sin un solo email enviado. Potencial significativo sin explotar.</p>
+    <div class="targets">
+      <span class="tg">Energía 140 libres</span>
+      <span class="tg">Industria 102 libres</span>
+      <span class="tg">Otros 186 libres</span>
+      <span class="tg">Comercio 43 libres</span>
+    </div>
+  </div>
+  <div class="rec info">
+    <div class="rec-icon">🏦</div>
+    <h4>Atención — Bancos argentinos bloquean emails</h4>
+    <p>Trend Micro (usado por Banco Columbia, San Juan, Global Processing) rechaza nuestros emails. Se requiere estrategia alternativa: LinkedIn, llamada directa o campaña desde dominio de reputación.</p>
+    <div class="targets">
+      <span class="tg">7 rebotes Trend Micro AR Finanzas</span>
+      <span class="tg">4 rebotes BICE CL</span>
+    </div>
+  </div>
+</div>
+
+<!-- GITHUB COMMAND -->
+<div class="sec">🚀 Comando para subir a GitHub Pages</div>
+<div class="cpanel">
+  <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Ejecutar desde la carpeta del repositorio GitHub Pages (ajustar <code>TU_REPO</code> si es necesario):</p>
+  <div class="cmd-box">
+    <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">cd "C:\Users\nicol\Claude\Projects\NeatIT"</span><span class="cmd-comment"># o la carpeta del repo</span></div>
+    <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">git add dashboard_apollo_global.html</span></div>
+    <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">git commit -m "Dashboard ejecutivo Apollo - actualización completa 12 verticales"</span></div>
+    <div class="cmd-line"><span class="cmd-prompt">$</span><span class="cmd-text">git push origin main</span><span class="cmd-comment"># o 'master' según tu rama</span></div>
+  </div>
+</div>
+
+</main>
+
+<div class="footer">
+  Campaña <strong>Cold Mail</strong> · NeatIT · nicolas@neatit.com.ar · Generado el <span id="footerDate"></span><br>
+  Datos verificados en Gmail + 12 archivos Excel · Revisión exhaustiva completada
+</div>
+
+<script>
+// ─── TIMESTAMP ───
+const now = new Date();
+const opts = {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'};
+const fmt = now.toLocaleDateString('es-AR', opts);
+document.getElementById('ts').textContent = fmt;
+document.getElementById('footerDate').textContent = now.toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+
+// ─── DATA ───
+const DATA = [
+  {name:'Logística & Transporte', pais:'AR', flag:'🇦🇷', total:155, env:147, res:5,  reb:3,  sin:0,  lib:0,   comp:0,  bor:0, cov:94.8},
+  {name:'Tecnología & Telco',     pais:'AR', flag:'🇦🇷', total:356, env:253, res:0,  reb:0,  sin:0,  lib:0,   comp:103,bor:0, cov:100},
+  {name:'Salud, Farma & Bio',     pais:'AR', flag:'🇦🇷', total:347, env:174, res:7,  reb:4,  sin:152,lib:15,  comp:0,  bor:0, cov:90.2},
+  {name:'Seguros',                pais:'AR', flag:'🇦🇷', total:230, env:127, res:2,  reb:0,  sin:78, lib:22,  comp:0,  bor:0, cov:85.2},
+  {name:'Agro, Amb. & Alim.',     pais:'AR', flag:'🇦🇷', total:158, env:152, res:0,  reb:2,  sin:4,  lib:0,   comp:0,  bor:0, cov:98.7},
+  {name:'Finanzas',               pais:'AR', flag:'🇦🇷', total:207, env:141, res:2,  reb:11, sin:1,  lib:53,  comp:0,  bor:53,cov:73.1},
+  {name:'Energía & Minería',      pais:'AR', flag:'🇦🇷', total:142, env:0,   res:0,  reb:0,  sin:2,  lib:140, comp:0,  bor:0, cov:0},
+  {name:'Industria & Const.',     pais:'AR', flag:'🇦🇷', total:103, env:0,   res:0,  reb:0,  sin:1,  lib:102, comp:0,  bor:0, cov:0},
+  {name:'Comercio & Trade',       pais:'AR', flag:'🇦🇷', total:45,  env:2,   res:0,  reb:0,  sin:0,  lib:43,  comp:0,  bor:0, cov:4.4},
+  {name:'Otros sectores',         pais:'AR', flag:'🇦🇷', total:197, env:10,  res:0,  reb:0,  sin:1,  lib:186, comp:0,  bor:0, cov:5.1},
+  {name:'Finanzas & Seguros',     pais:'CL', flag:'🇨🇱', total:86,  env:79,  res:1,  reb:5,  sin:1,  lib:0,   comp:0,  bor:0, cov:92.9},
+  {name:'Salud, Farma & Bio',     pais:'CL', flag:'🇨🇱', total:57,  env:55,  res:1,  reb:2,  sin:0,  lib:0,   comp:0,  bor:0, cov:96.5},
+  {name:'Finanzas & Banca',       pais:'UY', flag:'🇺🇾', total:33,  env:32,  res:0,  reb:1,  sin:0,  lib:0,   comp:0,  bor:0, cov:97.0},
+  {name:'Salud, Farma & Bio',     pais:'UY', flag:'🇺🇾', total:17,  env:16,  res:1,  reb:1,  sin:0,  lib:0,   comp:0,  bor:0, cov:94.1},
+];
+
+const COLORS = {env:'#3DA2EA',res:'#6E42B1',reb:'#f59e0b',comp:'#fca5a5',lib:'#cbd5e1',bor:'#c4b5fd'};
+
+// ─── REPLY RATE CHART ───
+const replyRates = DATA.map(d => d.env > 0 ? +(d.res/d.env*100).toFixed(2) : 0);
+const barColors = replyRates.map(r => r >= 3 ? '#10b981' : r >= 1 ? '#6E42B1' : r > 0 ? '#3DA2EA' : '#e5e7eb');
+new Chart(document.getElementById('chartReply'), {
+  type:'bar',
+  data:{
+    labels: DATA.map(d=>d.flag+' '+d.name.slice(0,14)),
+    datasets:[{label:'Reply rate %', data:replyRates, backgroundColor:barColors, borderRadius:4}]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>` ${ctx.raw}% (${DATA[ctx.dataIndex].res} resp.)`}}},
+    scales:{
+      x:{ticks:{font:{size:9},maxRotation:45}},
+      y:{ticks:{callback:v=>v+'%', font:{size:9}}, suggestedMax:5}
+    }
+  }
+});
+
+// ─── DONUT ───
+const totals={env:0,res:0,reb:0,comp:0,lib:0,sin:0};
+DATA.forEach(d=>{totals.env+=d.env;totals.res+=d.res;totals.reb+=d.reb;totals.comp+=d.comp;totals.lib+=d.lib;totals.sin+=d.sin});
+new Chart(document.getElementById('chartDonut'),{
+  type:'doughnut',
+  data:{
+    labels:['Enviados','Respondieron','Rebotes','Competidores','Libres/Pend.','Sin email'],
+    datasets:[{data:[totals.env,totals.res,totals.reb,totals.comp,totals.lib,totals.sin],
+      backgroundColor:['#3DA2EA','#6E42B1','#f59e0b','#fca5a5','#cbd5e1','#e5e7eb'],
+      borderWidth:2,borderColor:'#fff'}]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false, cutout:'60%',
+    plugins:{
+      legend:{position:'bottom',labels:{boxWidth:9,font:{size:9}}},
+      tooltip:{callbacks:{label:ctx=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${ctx.label}: ${ctx.raw.toLocaleString()} (${((ctx.raw/t)*100).toFixed(1)}%)`}}}
+    }
+  }
+});
+
+// ─── BAR CHART enviados vs total ───
+new Chart(document.getElementById('chartBar'),{
+  type:'bar',
+  data:{
+    labels:DATA.map(d=>d.flag+' '+d.name.slice(0,14)),
+    datasets:[
+      {label:'Enviados', data:DATA.map(d=>d.env), backgroundColor:'#3DA2EA', borderRadius:3},
+      {label:'Respondieron', data:DATA.map(d=>d.res), backgroundColor:'#6E42B1', borderRadius:3},
+      {label:'Rebotes', data:DATA.map(d=>d.reb), backgroundColor:'#f59e0b', borderRadius:3},
+      {label:'Competidores', data:DATA.map(d=>d.comp), backgroundColor:'#fca5a5', borderRadius:3},
+      {label:'Libres', data:DATA.map(d=>d.lib), backgroundColor:'#e5e7eb', borderRadius:3},
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{labels:{boxWidth:10,font:{size:9}}}},
+    scales:{
+      x:{stacked:true, ticks:{font:{size:8},maxRotation:45}},
+      y:{stacked:true, ticks:{font:{size:9}}}
+    }
+  }
+});
+
+// ─── TABLA ───
+const tbody = document.getElementById('tblBody');
+let tot={total:0,env:0,res:0,reb:0,sin:0,lib:0,comp:0};
+DATA.forEach((d,i)=>{
+  const rr = d.env>0 ? (d.res/d.env*100).toFixed(2) : 0;
+  const rrColor = rr>=3?'#10b981':rr>=1?'#6E42B1':rr>0?'#3DA2EA':'#e5e7eb';
+  const covColor = d.cov>=95?'#10b981':d.cov>=70?'#3DA2EA':d.cov>0?'#f59e0b':'#ef4444';
+  let stHtml='';
+  if(d.cov===100||d.cov>=90) stHtml=`<span class="status-tag st-done">✅ Completa</span>`;
+  else if(d.env===0) stHtml=`<span class="status-tag st-pend">Sin iniciar</span>`;
+  else if(d.bor>0) stHtml=`<span class="status-tag st-wip">⚡ ${d.bor} borradores</span>`;
+  else stHtml=`<span class="status-tag st-wip">En curso</span>`;
+  tbody.innerHTML+=`<tr>
+    <td>${d.flag} ${d.name}</td>
+    <td><b>${d.pais}</b></td>
+    <td class="num">${d.total}</td>
+    <td class="num env">${d.env}</td>
+    <td class="num res">${d.res||'—'}</td>
+    <td class="num reb">${d.reb||'—'}</td>
+    <td class="num sin">${d.sin||'—'}</td>
+    <td class="num lib">${d.lib||'—'}</td>
+    <td class="num comp">${d.comp||'—'}</td>
+    <td class="rate-cell"><div class="pct-bar"><div class="pct-track"><div class="pct-fill" style="width:${Math.min(rr/5*100,100)}%;background:${rrColor}"></div></div><span style="font-size:10px;font-weight:700;color:${rrColor};min-width:38px;text-align:right">${rr}%</span></div></td>
+    <td class="rate-cell"><div class="pct-bar"><div class="pct-track"><div class="pct-fill" style="width:${d.cov}%;background:${covColor}"></div></div><span style="font-size:10px;font-weight:700;color:${covColor};min-width:38px;text-align:right">${d.cov}%</span></div></td>
+    <td>${stHtml}</td>
+  </tr>`;
+  tot.total+=d.total;tot.env+=d.env;tot.res+=d.res;tot.reb+=d.reb;tot.sin+=d.sin;tot.lib+=d.lib;tot.comp+=d.comp;
+});
+const gRR=(tot.res/tot.env*100).toFixed(2);
+tbody.innerHTML+=`<tr class="total-row">
+  <td colspan="2">📊 TOTAL GLOBAL</td>
+  <td class="num">${tot.total.toLocaleString()}</td>
+  <td class="num env">${tot.env.toLocaleString()}</td>
+  <td class="num res">${tot.res}</td>
+  <td class="num reb">${tot.reb}</td>
+  <td class="num sin">${tot.sin}</td>
+  <td class="num lib">${tot.lib.toLocaleString()}</td>
+  <td class="num comp">${tot.comp}</td>
+  <td colspan="2"><b style="color:#6E42B1">Reply rate global: ${gRR}%</b></td>
+  <td>—</td>
+</tr>`;
+
+// ─── NOVEDADES ───
+const NOVS = [
+  // HOT LEADS
+  {cat:'hot', badge:'nb-hot', badgeLabel:'🔥 Hot Lead', nombre:'Eduardo Martin Salaverri', empresa:'Grupo Codylsa', email:'emartin@codylsa.com', vertical:'AR · Logística', nota:'Refirió a Verónica Hernandez (Gerente de IT) — contactar directamente', accion:'Buscar email de Verónica Hernandez (Codylsa IT Manager)'},
+  {cat:'hot', badge:'nb-hot', badgeLabel:'🔥 Hot Lead', nombre:'Daniel Himitian', empresa:'Celsur Logística', email:'dhimitian@celsur.com.ar', vertical:'AR · Logística', nota:'Puso en CC a Mariano Juzt (Gerente de Sistemas e Ingeniería)', accion:'Escribir a mjuzt@celsur.com.ar'},
+  {cat:'hot', badge:'nb-hot', badgeLabel:'🔥 Hot Lead', nombre:'Alejo Shaw', empresa:'Urufarma', email:'ashaw@urufarma.com.uy', vertical:'UY · Salud', nota:'Aclaró que él ve infra edilicia, puso en CC a Christian Nuñez (Supervisor IT Datos)', accion:'Escribir a cnunez@urufarma.com.uy'},
+  {cat:'hot', badge:'nb-hot', badgeLabel:'🔥 Hot Lead', nombre:'Luis Velazquez', empresa:'Bolsa de Comercio de Buenos Aires', email:'lvelazquez@labolsa.com.ar', vertical:'AR · Finanzas', nota:'Pidió información de la empresa — brochure enviado', accion:'Seguimiento en 48hs'},
+  {cat:'hot', badge:'nb-hot', badgeLabel:'🔥 Hot Lead', nombre:'Marcelo Trivino', empresa:'Uala', email:'marcelo.trivino@uala.com.ar', vertical:'AR · Finanzas', nota:'Pidió brochure — enviado', accion:'Seguimiento en 48hs'},
+  {cat:'hot', badge:'nb-hot', badgeLabel:'🔥 Hot Lead', nombre:'Nicolas Bojanich', empresa:'Sanatorio Británico', email:'nicolas.bojanich@sanbritanico.com.ar', vertical:'AR · Salud', nota:'Pidió brochure y toda info relevante — enviado', accion:'Seguimiento en 48hs'},
+  {cat:'hot', badge:'nb-hot', badgeLabel:'🔥 Hot Lead', nombre:'Martín Nazar', empresa:'Sanatorio Mater Dei (SMDEI)', email:'jmartin.nazar@smdei.com', vertical:'AR · Salud', nota:'Sin necesidad puntual pero pedió brochure para tenerlo en cuenta — enviado', accion:'Seguimiento en 2 semanas'},
+  // RESP
+  {cat:'resp', badge:'nb-resp', badgeLabel:'💬 Respondió', nombre:'Eduardo Dimeglio', empresa:'FastTrack Logística', email:'edimeglio@fasttrack.com.ar', vertical:'AR · Logística', nota:'Toda oferta debe cargarse en su sitio web. Se completó el formulario.', accion:null},
+  {cat:'resp', badge:'nb-resp', badgeLabel:'💬 Respondió', nombre:'Marcelo Toledo', empresa:'ANJOR (Indura)', email:'mtoledo@anjorsa.com.ar', vertical:'AR · Logística', nota:'IT manejado desde HQ en Córdoba — pidió que lo contactemos allá', accion:'Buscar contacto IT en HQ Córdoba'},
+  {cat:'resp', badge:'nb-resp', badgeLabel:'💬 Respondió', nombre:'Diego Lencina', empresa:'Azistia', email:'dlencina@azistia.com.ar', vertical:'AR · Salud', nota:'Respondió — seguimiento pendiente', accion:null},
+  {cat:'resp', badge:'nb-resp', badgeLabel:'💬 Respondió', nombre:'Joaquin Maetta + Lucas Mino', empresa:'C.D. Rossi', email:'jmaetta@cdrossi.com · lmino@cdrossi.com', vertical:'AR · Salud', nota:'2 contactos de la misma empresa respondieron', accion:null},
+  {cat:'oport', badge:'nb-oport', badgeLabel:'🎯 Oportunidad · Julio', nombre:'Valeria Cellerino', empresa:'Sanatorio Americano', email:'vcellerino@sanatorio-americano.com.ar', vertical:'AR · Salud', nota:'Respondió e identificada como oportunidad activa para julio. Sanatorio privado con decisión de IT local.', accion:'Agendar reunión o demo — pipeline julio'},
+  {cat:'oport', badge:'nb-oport', badgeLabel:'🎯 Oportunidad · Julio', nombre:'Luis Beckford', empresa:'Zapata Goma', email:'luis@zapatagoma.com.ar', vertical:'AR · Campaña personal', nota:'Oportunidad de Argentina identificada fuera del flujo Apollo — contacto directo por campaña personal.', accion:'Agendar reunión o demo — pipeline julio'},
+  {cat:'resp', badge:'nb-resp', badgeLabel:'💬 Respondió', nombre:'Matias Pisani', empresa:'Chobet', email:'mpisani@chobet.com.ar', vertical:'AR · Salud', nota:'Respondió — seguimiento pendiente', accion:null},
+  {cat:'resp', badge:'nb-resp', badgeLabel:'💬 Respondió', nombre:'Gianni Hernandez', empresa:'Hospital San José', email:'gianni.hernandez@redsalud.gob.cl', vertical:'CL · Salud', nota:'Todo contacto comercial debe gestionarse mediante la Ley del Lobby (Chile)', accion:'Canal formal: Ley del Lobby'},
+  // RECHAZADOS / NEG
+  {cat:'neg', badge:'nb-neg', badgeLabel:'❌ No interesa', nombre:'Facundo Gimenez', empresa:'Aprile International Freight', email:'facundo.gimenez@aprilenet.com', vertical:'AR · Logística', nota:'IT centralizado en HQ Italia — sin injerencia local', accion:null},
+  {cat:'neg', badge:'nb-neg', badgeLabel:'❌ No interesa', nombre:'Gabriel Vilosio', empresa:'El Norte Seguros', email:'gvilosio@elnorte.com.ar', vertical:'AR · Seguros', nota:'"Tienen todo cubierto"', accion:null},
+  // REBOTES NOTABLES
+  {cat:'reb', badge:'nb-reb', badgeLabel:'⚠️ Rebote', nombre:'Martin Yaya', empresa:'Provincia Seguros', email:'yayam@pseguros.com.ar', vertical:'AR · Seguros', nota:'Bloqueado por Trend Micro — cliente de competidor', accion:'Intentar por LinkedIn'},
+  // GDPR
+  {cat:'reb', badge:'nb-gdpr', badgeLabel:'🔒 GDPR Opt-out', nombre:'Melissa Silva', empresa:'Fintual', email:'meli@fintual.com', vertical:'CL · Finanzas', nota:'Ejerció formalmente derecho de oposición y solicitud de baja de BBDD — cumplido', accion:'✅ Baja procesada'},
+];
+
+const novGrid = document.getElementById('novGrid');
+function renderNovs(filter){
+  novGrid.innerHTML='';
+  NOVS.filter(n => filter==='all'||n.cat===filter).forEach(n=>{
+    novGrid.innerHTML+=`
+    <div class="nov-item ${n.cat}">
+      <div class="nov-meta">
+        <span class="nov-name">${n.nombre}</span>
+        <span class="nov-co">· ${n.empresa}</span>
+        <span class="nov-badge ${n.badge}">${n.badgeLabel}</span>
+      </div>
+      <div class="nov-email">${n.email}</div>
+      <div class="nov-note">${n.nota}</div>
+      <div class="nov-footer">
+        <span class="nov-vert">${n.vertical}</span>
+        ${n.accion?`<span class="nov-action">→ ${n.accion}</span>`:''}
+      </div>
+    </div>`;
+  });
+}
+renderNovs('all');
+
+document.querySelectorAll('.nf-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.nf-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderNovs(btn.dataset.f);
+  });
+});
+</script>
+</body>
+</html>
